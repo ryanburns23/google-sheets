@@ -399,6 +399,9 @@ See [developers.google.com/google-apps/spreadsheets](https://developers.google.c
     _onCellRows: function(e) {
       e.stopPropagation();
 
+      if(!e.target.lastResponse){
+        return;
+      }
       var feed = e.target.lastResponse.feed;
 
       // Cache data if key doesn't exist.

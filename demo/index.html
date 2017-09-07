@@ -4,8 +4,8 @@
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <title>google-sheets Demo</title>
-  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
-  <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
   <link rel="import" href="../google-sheets.html">
   <link rel="import" href="../../google-map/google-map.html">
   <style>
@@ -49,18 +49,19 @@
   </style>
 </head>
 <body>
+  <dom-bind>
+    <template>
+      <p>A <code>&lt;google-sheets></code> element returns data from a Google Spreadsheet:</p>
 
-<p>A <code>&lt;google-sheets></code> element returns data from a Google Spreadsheet:</p>
-
-<main class="layout horizontal">
-
-<template id="container" is="dom-bind">
-
-  <section>
-
-      <!-- Example: published spreadsheet -->
-      <google-sheets id="sheet" key="0Anye-JMjUkZZdDBkMVluMEhZMmFGeHpYdDJJV1FBRWc" tab-id="1"
-                     published rows="{{rows}}" tab="{{tab}}" open-in-google-docs-url="{{openInGoogleDocsUrl}}"></google-sheets>
+      <google-sheets 
+        id="sheet" 
+        key="0Anye-JMjUkZZdDBkMVluMEhZMmFGeHpYdDJJV1FBRWc" 
+        tab-id="1"
+        published 
+        rows="{{rows}}" 
+        tab="{{tab}}" 
+        open-in-google-docs-url="{{openInGoogleDocsUrl}}">
+      </google-sheets>
 
       <heading>
         <h3>Spreadsheet rows:
@@ -70,36 +71,14 @@
         </h3>
         <h5>updated: <span>{{tab.updated}}</span>, by: <template is="dom-repeat" items="{{rows.authors}}">{{item.name}}</template></h5>
       </heading>
+
       <ul>
         <template is="dom-repeat" items="[[rows]]">
           <li>Name: <span>{{item.gsx$name.$t}}</span> ( lat: <span>{{item.gsx$lat.$t}}</span>, lng: <span>{{item.gsx$lng.$t}}</span> )</li>
         </template>
       </ul>
-
-  </section>
-
-  <section style="padding: 0;">
-
-    <google-map disable-default-ui fit-to-markers>
-      <template is="dom-repeat" items="[[rows]]">
-        <google-map-marker latitude="{{item.gsx$lat.$t}}" longitude="{{item.gsx$lng.$t}}"></google-map-marker>
-      </template>
-    </google-map>
-
-    <button on-click="useTab" data-tabid="1">View tab 1 data</button>
-    <button on-click="useTab" data-tabid="2">View tab 2 data</button>
-
-  </section>
-
-</template>
-</main>
-
-<script>
-var template = document.querySelector('#container');
-
-template.useTab = function(e, detail, sender) {
-  document.querySelector('#sheet').tabId = Number(e.currentTarget.dataset.tabid);
-};
-</script>
+    </template>
+  </dom-bind>
+  
 </body>
 </html>
