@@ -1,0 +1,776 @@
+{
+  "schema_version": "1.0.0",
+  "elements": [
+    {
+      "description": "Element for interacting with Google Sheets.\n\n`<google-sheets>` pulls cell data from the Google Sheet specified by `key`.\nA spreadsheet's key can be found in the URL when viewing it in google docs (e.g. `docs.google.com/spreadsheet/ccc?key=<KEY>#gid=12345`).\n\nOptionally, pass the `tab-id` attribute to specify a particular worksheet tab in the spreadsheet. For example, the first tab would be `tab-id=\"1\"`. If `tab` is updated at a later time, the underlying data is also updated. **API calls are cached** as to not make extraneous calls.\n\nSee [developers.google.com/google-apps/spreadsheets](https://developers.google.com/google-apps/spreadsheets) for full Spreadsheets API documentation.\n\n#### Example\n\n    <google-sheets key=\"...\" tab-id=\"1\" client-id=\"...\"></google-sheets>\n\n    <script>\n      var sheet = document.querySelector('google-sheets');\n\n      sheet.addEventListener('google-sheet-data', function(e) {\n       // this.spreadsheets - list of the user's spreadsheets\n       // this.tab - information on the tab that was fetched\n       // this.rows - cell row information for the tab that was fetched\n      });\n\n      sheet.addEventListener('error', function(e) {\n       // e.detail.response\n      });\n    </script>\n\n<b>Example</b> - `published` is a perf optimization and hints that the spreadsheet has been published (public):\n\n    <google-sheets key=\"0Anye-JMjUkZZdDBkMVluMEhZMmFGeHpYdDJJV1FBRWc\" published></google-sheets>\n\n<b>Example</b> - leaving off the `key` returns as list of the user's spreadsheets.\n\n    <google-sheets client-id=\"...\"></google-sheets>\n\n<b>Example</b> - show a list of Map markers, using data-binding features inside Polymer:\n\n    <template is=\"dom-bind\">\n      <google-sheets\n        key=\"0Anye-JMjUkZZdDBkMVluMEhZMmFGeHpYdDJJV1FBRWc\" tab-id=\"1\" rows=\"{{rows}}\"\n        client-id=\"...\">\n      </google-sheets>\n      <google-map>\n        <google-map-marker latitude=\"{{gsx$lat.$t}}\" longitude=\"{{gsx$lng.$t}}\">\n      </google-map>\n    </template>\n\n<b>Example</b> - list a user's private spreadsheets. Authenticate with google-signin button.\n\n    <google-signin\n      client-id=\"1054047045356-j8pgqgls9vdef3rl09hapoicumbte0bo.apps.googleusercontent.com\"\n      scopes=\"https://spreadsheets.google.com/feeds\">\n    </google-signin>\n\n    <template is=\"dom-bind\">\n      <google-sheets client-id=\"1054047045356-j8pgqgls9vdef3rl09hapoicumbte0bo.apps.googleusercontent.com\"\n         key=\"1QMGizivw3UJ3-R9BFK7sfrXE0RL87dygk2C0RcuKoDY\" tab-id=\"1\"\n         spreadsheets=\"{{spreadsheets}}\"></google-sheets>\n      <template is=\"dom-repeat\" items=\"[[spreadsheets]]\">\n        <p>{{item.title.$t}}</p>\n      </template>\n    </template>",
+      "summary": "",
+      "path": "google-sheets.html",
+      "properties": [
+        {
+          "name": "hostAttributes",
+          "type": "Object",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 140,
+              "column": 4
+            },
+            "end": {
+              "line": 142,
+              "column": 5
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "clientId",
+          "type": "string",
+          "description": "A Google Developers client ID. Obtain from [console.developers.google.com](https://console.developers.google.com). Required for accessing a private spreadsheet. Optional if accessing a public spreadsheet.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 148,
+              "column": 6
+            },
+            "end": {
+              "line": 152,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_configUpdate\""
+            }
+          },
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "key",
+          "type": "string",
+          "description": "The key of the spreadsheet. This can be found in the URL when viewing\nthe document is Google Docs (e.g. `docs.google.com/spreadsheet/ccc?key=<KEY>`).\n\nLeaving off this attribute still returns a list of the users spreadsheets in the `spreadsheets` property.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 160,
+              "column": 6
+            },
+            "end": {
+              "line": 164,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_keyChanged\""
+            }
+          },
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "tabId",
+          "type": "number",
+          "description": "Tab within a spreadsheet. For example, the first tab in a spreadsheet\nwould be `tab-id=\"1\"`.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 170,
+              "column": 6
+            },
+            "end": {
+              "line": 174,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_configUpdate\""
+            }
+          },
+          "defaultValue": "1"
+        },
+        {
+          "name": "published",
+          "type": "boolean",
+          "description": "A hint that the spreadsheet is published publicly in Google Docs. Used as a performance optimization.\nMake sure the sheet is also publicly viewable by anyone in the Share settings.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 184,
+              "column": 6
+            },
+            "end": {
+              "line": 188,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_configUpdate\""
+            }
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "sheet",
+          "type": "Object",
+          "description": "The fetched sheet corresponding to the `key` attribute.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 193,
+              "column": 6
+            },
+            "end": {
+              "line": 199,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_sheetChanged\"",
+              "readOnly": true
+            }
+          },
+          "defaultValue": "{}"
+        },
+        {
+          "name": "tab",
+          "type": "Object",
+          "description": "Meta data about the particular tab that was retrieved for the spreadsheet.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 204,
+              "column": 6
+            },
+            "end": {
+              "line": 210,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_tabChanged\"",
+              "readOnly": true
+            }
+          },
+          "defaultValue": "{}"
+        },
+        {
+          "name": "rows",
+          "type": "Array",
+          "description": "If a spreadsheet `key` is specified, returns a list of cell row data.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 215,
+              "column": 6
+            },
+            "end": {
+              "line": 220,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "readOnly": true
+            }
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "spreadsheets",
+          "type": "Array",
+          "description": "List of the user's spreadsheets. Shared across instances.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 225,
+              "column": 6
+            },
+            "end": {
+              "line": 230,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "readOnly": true
+            }
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "openInGoogleDocsUrl",
+          "type": "string",
+          "description": "The URL to open this spreadsheet in Google Sheets.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 235,
+              "column": 6
+            },
+            "end": {
+              "line": 239,
+              "column": 7
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "readOnly": true
+            }
+          }
+        },
+        {
+          "name": "_worksheetId",
+          "type": "object",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 242,
+              "column": 4
+            },
+            "end": {
+              "line": 242,
+              "column": 22
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        }
+      ],
+      "methods": [
+        {
+          "name": "_computeGoogleDocsUrl",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 244,
+              "column": 4
+            },
+            "end": {
+              "line": 250,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "key"
+            }
+          ]
+        },
+        {
+          "name": "_configUpdate",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 252,
+              "column": 4
+            },
+            "end": {
+              "line": 254,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "key"
+            },
+            {
+              "name": "published"
+            },
+            {
+              "name": "tabId"
+            },
+            {
+              "name": "clientId"
+            }
+          ]
+        },
+        {
+          "name": "_keyChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 256,
+              "column": 4
+            },
+            "end": {
+              "line": 265,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "newValue"
+            },
+            {
+              "name": "oldValue"
+            }
+          ]
+        },
+        {
+          "name": "_tabIdChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 267,
+              "column": 4
+            },
+            "end": {
+              "line": 273,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "newValue"
+            },
+            {
+              "name": "oldValue"
+            }
+          ]
+        },
+        {
+          "name": "_sheetChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 275,
+              "column": 4
+            },
+            "end": {
+              "line": 291,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "newValue"
+            },
+            {
+              "name": "oldValue"
+            }
+          ]
+        },
+        {
+          "name": "_tabChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 293,
+              "column": 4
+            },
+            "end": {
+              "line": 310,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "newValue"
+            },
+            {
+              "name": "oldValue"
+            }
+          ]
+        },
+        {
+          "name": "_onSignInSuccess",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 312,
+              "column": 4
+            },
+            "end": {
+              "line": 326,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            },
+            {
+              "name": "detail"
+            }
+          ]
+        },
+        {
+          "name": "_onSignInFail",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 328,
+              "column": 4
+            },
+            "end": {
+              "line": 331,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            },
+            {
+              "name": "detail"
+            }
+          ]
+        },
+        {
+          "name": "_listSpreadsheets",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 333,
+              "column": 4
+            },
+            "end": {
+              "line": 337,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onSpreadsheetList",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 339,
+              "column": 4
+            },
+            "end": {
+              "line": 361,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_getWorksheet",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 363,
+              "column": 4
+            },
+            "end": {
+              "line": 372,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onWorksheet",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 374,
+              "column": 4
+            },
+            "end": {
+              "line": 380,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_getCellRows",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 382,
+              "column": 4
+            },
+            "end": {
+              "line": 396,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onCellRows",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 398,
+              "column": 4
+            },
+            "end": {
+              "line": 428,
+              "column": 5
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [
+        {
+          "url": "demo/index.html",
+          "description": ""
+        }
+      ],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 126,
+          "column": 32
+        },
+        "end": {
+          "line": 430,
+          "column": 3
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "window.GoogleSheets",
+      "attributes": [
+        {
+          "name": "client-id",
+          "description": "A Google Developers client ID. Obtain from [console.developers.google.com](https://console.developers.google.com). Required for accessing a private spreadsheet. Optional if accessing a public spreadsheet.",
+          "sourceRange": {
+            "start": {
+              "line": 148,
+              "column": 6
+            },
+            "end": {
+              "line": 152,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "key",
+          "description": "The key of the spreadsheet. This can be found in the URL when viewing\nthe document is Google Docs (e.g. `docs.google.com/spreadsheet/ccc?key=<KEY>`).\n\nLeaving off this attribute still returns a list of the users spreadsheets in the `spreadsheets` property.",
+          "sourceRange": {
+            "start": {
+              "line": 160,
+              "column": 6
+            },
+            "end": {
+              "line": 164,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "tab-id",
+          "description": "Tab within a spreadsheet. For example, the first tab in a spreadsheet\nwould be `tab-id=\"1\"`.",
+          "sourceRange": {
+            "start": {
+              "line": 170,
+              "column": 6
+            },
+            "end": {
+              "line": 174,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "number"
+        },
+        {
+          "name": "published",
+          "description": "A hint that the spreadsheet is published publicly in Google Docs. Used as a performance optimization.\nMake sure the sheet is also publicly viewable by anyone in the Share settings.",
+          "sourceRange": {
+            "start": {
+              "line": 184,
+              "column": 6
+            },
+            "end": {
+              "line": 188,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "sheet",
+          "description": "The fetched sheet corresponding to the `key` attribute.",
+          "sourceRange": {
+            "start": {
+              "line": 193,
+              "column": 6
+            },
+            "end": {
+              "line": 199,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        },
+        {
+          "name": "tab",
+          "description": "Meta data about the particular tab that was retrieved for the spreadsheet.",
+          "sourceRange": {
+            "start": {
+              "line": 204,
+              "column": 6
+            },
+            "end": {
+              "line": 210,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        },
+        {
+          "name": "rows",
+          "description": "If a spreadsheet `key` is specified, returns a list of cell row data.",
+          "sourceRange": {
+            "start": {
+              "line": 215,
+              "column": 6
+            },
+            "end": {
+              "line": 220,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "spreadsheets",
+          "description": "List of the user's spreadsheets. Shared across instances.",
+          "sourceRange": {
+            "start": {
+              "line": 225,
+              "column": 6
+            },
+            "end": {
+              "line": 230,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "open-in-google-docs-url",
+          "description": "The URL to open this spreadsheet in Google Sheets.",
+          "sourceRange": {
+            "start": {
+              "line": 235,
+              "column": 6
+            },
+            "end": {
+              "line": 239,
+              "column": 7
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "google-sheet-data",
+          "description": "google-sheet-data",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "sheet-changed",
+          "description": "Fired when the `sheet` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "tab-changed",
+          "description": "Fired when the `tab` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "rows-changed",
+          "description": "Fired when the `rows` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "spreadsheets-changed",
+          "description": "Fired when the `spreadsheets` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "open-in-google-docs-url-changed",
+          "description": "Fired when the `openInGoogleDocsUrl` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "google-sheets"
+    }
+  ]
+}
